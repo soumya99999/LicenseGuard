@@ -1,50 +1,88 @@
-# 🎯 LicenseGuard – License Inventory Frontend
+# 📦 License Inventory Management Module – LicenseGuard
 
-## 📖 Introduction  
-The **LicenseGuard License Inventory Frontend** is a modern web application for managing software license records across departments. It provides an intuitive interface to **create, view, filter, and track licenses** tied to procurement data.  
-
-Built with a scalable tech stack, it integrates seamlessly with the LicenseGuard backend via REST APIs, enabling **real-time synchronization** of license information.  
-
----
-
-## ✨ Features  
-- ➕ Add new software license entries using an interactive form  
-- 📑 View all licenses in a **paginated and sortable table**  
-- 🔎 Filter licenses by **Department ID** or **Procurement Record ID**  
-- 📅 Track purchase and expiry dates for compliance and renewals  
-- 🔄 Real-time data updates through REST API integration  
+## 📘 Overview
+The **License Inventory Management** module is a core component of the **LicenseGuard System**, responsible for **storing, managing, and tracking software licenses** purchased by different departments.  
+It integrates with procurement records, monitors license availability, and supports downstream modules such as **renewal alerts, license assignment, compliance monitoring, and reporting**.
 
 ---
 
-## 🛠️ Tech Stack  
-
-| Layer               | Technology |
-|---------------------|------------|
-| **Framework**       | React.js / Next.js |
-| **HTTP Client**     | Axios / Fetch API |
-| **Styling**         | Tailwind CSS / Bootstrap / Material UI |
-| **Routing**         | React Router (if applicable) |
-| **State Management**| React Hooks / Zustand / Redux Toolkit |
+## 🎯 Module Objectives
+- Track and store department-wise software license details.  
+- Ensure traceability of license origin through procurement record mapping.  
+- Maintain quantity metrics for usage and assignment.  
+- Provide REST APIs to retrieve license data by ID, department, or procurement record.  
 
 ---
 
-## 🌐 API Endpoints  
+## 🧱 Entity: `LicenseInventory`
 
-The frontend interacts with the backend service via the following endpoints:  
+**Mapped Table:** `license_inventory`
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/licenses` | Create a new license entry |
-| `GET`  | `/api/licenses` | Retrieve all license records |
-| `GET`  | `/api/licenses/{id}` | Retrieve license by ID |
-| `GET`  | `/api/licenses/department/{deptId}` | Retrieve licenses by Department |
-| `GET`  | `/api/licenses/procurement/{procId}` | Retrieve licenses by Procurement Record |
+### Fields
+
+| Field Name          | Data Type     | Description                                   |
+|---------------------|---------------|-----------------------------------------------|
+| `softwareName`      | String        | Name of the software                          |
+| `licenseKey`        | String (Unique) | Unique license key assigned to the software   |
+| `totalQuantity`     | int           | Total number of licenses purchased            |
+| `availableQuantity` | int           | Number of licenses currently available        |
+| `purchaseDate`      | LocalDate     | Date when the license was purchased           |
+| `expiryDate`        | LocalDate     | Date when the license will expire             |
+
+### Relationships
+
+| Relationship Type | Related Entity     | Join Column      | Description                                   |
+|-------------------|-------------------|------------------|-----------------------------------------------|
+| `@ManyToOne`      | Department        | `department_id`  | Associates license with a specific department |
+| `@ManyToOne`      | ProcurementRecord | `procurement_id` | Links license to its source procurement       |
 
 ---
 
-## 🚀 Getting Started  
+## 🌐 REST API Endpoints
 
-### 1️⃣ Clone the Repository  
-```bash
-git clone https://github.com/soumya99999/LicenseGuard.git
-cd LicenseGuard
+**Base URL:** `/api/licenses`
+
+| Method | Endpoint                | Description                   |
+|--------|-------------------------|-------------------------------|
+| `POST` | `/`                     | Create a new license record   |
+| `GET`  | `/`                     | Retrieve all licenses         |
+| `GET`  | `/{id}`                 | Get license by ID             |
+| `GET`  | `/department/{deptId}`  | Get licenses by department    |
+| `GET`  | `/procurement/{procId}` | Get licenses by procurement   |
+
+---
+
+## 🔄 Dependencies
+
+- **Inputs Required**
+  - Valid `department_id`  
+  - Valid `procurement_id`  
+
+- **Used By**
+  - **Expiry & Renewal Module** → Uses `expiryDate` to trigger alerts  
+  - **Assignment Module** → Uses `availableQuantity` for allocation  
+  - **Compliance Monitoring** → Checks license usage limits  
+  - **Reporting Module** → Generates audit and usage reports  
+
+---
+
+## 🛠️ Technologies Used
+- **Backend Framework**: Spring Boot (Java)  
+- **ORM**: Hibernate / JPA  
+- **Database**: MySQL (or any relational DB)  
+- **DTO Layer**: For mapping between Entity and Controller  
+
+---
+
+## 📌 Notes
+- All license keys must be **unique**.  
+- Department and procurement records must exist before creating a license entry.  
+- Date format in POST requests must follow **`yyyy-MM-dd`**.  
+
+---
+
+## 👨‍💻 Developers
+**Soumya Ranjan Barik & Nihal Kumar**  
+_Module Owners – License Inventory Management, LicenseGuard System_  
+
+---
